@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Filters Sidebar -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Filters</h5>
+                <form id="filterForm" method="get">
+                    <!-- Categories -->
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category }}" {% if category == current_category %}selected{% endif %}>
+                                {{ category }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="mb-3">
+                        <label class="form-label">Price Range</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text">$</span>
+                            <input type="number" name="min_price" class="form-control" placeholder="Min"
+                                value="{{ current_min_price or '' }}">
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" name="max_price" class="form-control" placeholder="Max"
+                                value="{{ current_max_price or '' }}">
+                        </div>
+                    </div>
+
+                    <!-- Sort By -->
+                    <div class="mb-3">
+                        <label class="form-label">Sort By</label>
+                        <select name="sort_by" class="form-select">
+                            <option value="popularity" {% if current_sort == 'popularity' %}selected{% endif %}>Popularity</option>
+                            <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="col-md-9">
+        {% if error %}
+        <div class="alert alert-danger">
+            <h4 class="alert-heading">Error Loading Products</h4>
+            <p>Sorry, we encountered an error while loading products. Please try again later.</p>
+        </div>
+        {% elif products and products.items %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for product in products.items %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-img-container">
+                        {% if product.image_url %}
+                        <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+                        {% else %}
+                        <div class="card-img-top bg-light text-center py-5">
+                            <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                        <p class="card-text"><strong>${{ "%.2f"|format(product.price) }}</strong></p>
+                        {% if current_user.is_authenticated %}
+                        <button class="btn btn-primary add-to-cart" data-product-id="{{ product.id }}">
+                            Add to Cart
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login to Purchase</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if products.pages > 1 %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% for page in range(1, products.pages + 1) %}
+                <li class="page-item {% if page == products.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('main.index', page=page, **request.args) }}">{{ page }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+        {% else %}
+        <div class="alert alert-info">
+            <h4 class="alert-heading">No Products Found</h4>
+            <p>Try adjusting your filters or check back later for new products.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

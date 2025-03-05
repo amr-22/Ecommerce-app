@@ -1,0 +1,61 @@
+.card-img-top {
+    height: 200px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+    padding: 10px;
+}
+
+.card-img-container {
+    height: 220px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+}
+
+.card {
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-text {
+    flex-grow: 1;
+    margin-bottom: 1rem;
+}
+
+.cart-count {
+    font-size: 0.6rem;
+}
+
+#cartItems {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.cart-item {
+    border-bottom: 1px solid #dee2e6;
+    padding: 10px 0;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.quantity-control {
+    width: 80px;
+}
+
+.toast-container {
+    z-index: 1100;
+}
